@@ -74,6 +74,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 		if(err) then
 			pinput.style = "border: 2px solid red; padding: 5px; outline: none;"
 			result.innerHTML = text_input.value
+			print(err)
 		else
 			pinput.style = "border: 2px solid green; padding: 5px; outline: none;"
 		end
@@ -88,7 +89,8 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 		local postfix = "</span>"
 
 		for word in text_input.value:gmatch(pinput.value) do
-			local s_start, s_end = cache:find(word, lastplace+1)
+			local s_start, s_end = cache:find(
+				word:gsub("([%%%)%(])", "%%%1"), lastplace+1)
 			table.insert(r_table, {s_start, s_end, word})
 			lastplace = s_end
 		end
@@ -97,6 +99,9 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 			if (i%2==0) then return prefix else return prefix2 end
 		end
 		for i, entry in ipairs(r_table) do
+			print(entry[1])
+			print(entry[2])
+			print(entry[3])
 			cache = table.concat({
 				cache:sub(0, entry[1] + (i-1)*prefix:len() + (i-1)*postfix:len() - 1), 
 				pfix(i),
