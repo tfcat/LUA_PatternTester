@@ -85,6 +85,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 	function _perform_scan()
 		local cache = text_input.value
+		local pattern = pinput.value
 		local lastplace = 0
 		local r_table = {}
 		local prefix = "<span style='background:#ff63e5;'>"
@@ -92,18 +93,22 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 		local postfix = "</span>"
 
 		-- clear without crashing
-		if pinput.value == "" then
+		if pattern == "" then
 			result.innerHTML = cache
 			return
 		end 
 
-		local s_start, s_end = cache:find(pinput.value, lastplace+1)
+		local s_start, s_end, capture = cache:find(pattern, lastplace+1)
+		if(s_start == nil) then result.innerHTML = cache; return end
+		if(s_end < s_start) then result.innerHTML = cache; return end
+
 		while (s_start ~= nil) do
 			-- this is the part with the error
-			table.insert(r_table, {s_start, s_end, cache:sub(s_start, s_end)})
+			local word = cache:sub(s_start, s_end)
+			table.insert(r_table, {s_start, s_end, word})
 			print(s_start, s_end, word)
 			lastplace = s_end
-			s_start, s_end = cache:find(pinput.value, lastplace+1)
+			s_start, s_end = cache:find(pattern, lastplace+1)
 		end
 
 		local pfix = function(i) 
