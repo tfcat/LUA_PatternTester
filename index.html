@@ -38,6 +38,9 @@
 			width: 800px;
 			position: relative;
 		}
+		#result:nth-child(n+2):nth-last-child(n+2) {
+			background-color: red;
+		}
 	</style>
 </head>
 <body>
@@ -88,20 +91,25 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 		local prefix2 = "<span style='background:#ffbaf3;'>"
 		local postfix = "</span>"
 
-		for word in text_input.value:gmatch(pinput.value) do
-			local s_start, s_end = cache:find(
-				word:gsub("([%%%)%(])", "%%%1"), lastplace+1)
-			table.insert(r_table, {s_start, s_end, word})
+		-- clear without crashing
+		if pinput.value == "" then
+			result.innerHTML = cache
+			return
+		end 
+
+		local s_start, s_end = cache:find(pinput.value, lastplace+1)
+		while (s_start ~= nil) do
+			-- this is the part with the error
+			table.insert(r_table, {s_start, s_end, cache:sub(s_start, s_end)})
+			print(s_start, s_end, word)
 			lastplace = s_end
+			s_start, s_end = cache:find(pinput.value, lastplace+1)
 		end
 
 		local pfix = function(i) 
 			if (i%2==0) then return prefix else return prefix2 end
 		end
 		for i, entry in ipairs(r_table) do
-			print(entry[1])
-			print(entry[2])
-			print(entry[3])
 			cache = table.concat({
 				cache:sub(0, entry[1] + (i-1)*prefix:len() + (i-1)*postfix:len() - 1), 
 				pfix(i),
